@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { account } from "@/lib/appwrite";
 import { OAuthProvider, ID } from "appwrite";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -13,10 +15,27 @@ export default function AuthPage() {
   const [userId, setUserId] = useState("");
   const [otp, setOtp] = useState("");
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        await account.get();
+        router.push("/dashboard");
+      } catch (e) {
+        // Not logged in, check if we were mid-OTP
+        const savedUserId = sessionStorage.getItem("appwrite_otp_userId");
+        if (savedUserId) {
+          setUserId(savedUserId);
+          setShowOtp(true);
+        }
+      }
+    };
+    checkSession();
+  }, [router]);
+
   const handleOAuthLogin = (provider: OAuthProvider) => {
-    account.createOAuth2Session(
+    account.createOAuth2Token(
       provider,
-      `${window.location.origin}/dashboard`, // Success URL
+      `${window.location.origin}/onboarding`, // Success URL
       `${window.location.origin}/auth` // Failure URL
     );
   };
@@ -35,6 +54,7 @@ export default function AuthPage() {
       );
       
       setUserId(token.userId);
+      sessionStorage.setItem("appwrite_otp_userId", token.userId);
       setShowOtp(true);
       setMessage(`Secure token sent to ${email}. Check your inbox!`);
       
@@ -55,8 +75,9 @@ export default function AuthPage() {
       setMessage("");
       
       await account.createSession(userId, otp);
+      sessionStorage.removeItem("appwrite_otp_userId"); // Clean up
       
-      window.location.href = "/dashboard";
+      router.push("/onboarding");
     } catch (err: any) {
       console.error(err);
       setMessage("Invalid or expired code. Please try again.");

@@ -1,7 +1,49 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutDashboard, User, Briefcase, Trophy, LogOut } from "lucide-react";
+import { LayoutDashboard, User, Briefcase, Trophy, LogOut, Loader2 } from "lucide-react";
+import { account } from "@/lib/appwrite";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        await account.get();
+        setLoading(false);
+      } catch (e) {
+        console.error("No active session found:", e);
+        router.push("/auth");
+      }
+    };
+    checkSession();
+  }, [router]);
+
+  const handleSignOut = async () => {
+    try {
+      await account.deleteSession('current');
+      localStorage.removeItem('intervue_user');
+      router.push('/auth');
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#101822] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <p className="text-gray-400 font-medium">Validating session...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-dark text-white flex">
       {/* Sidebar */}
@@ -35,7 +77,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
         
         <div className="p-4 border-t border-white/10">
-          <button className="flex items-center gap-3 px-4 py-3 w-full rounded-twelve text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+          <button 
+            onClick={handleSignOut}
+            className="flex items-center gap-3 px-4 py-3 w-full rounded-twelve text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+          >
             <LogOut className="w-5 h-5" />
             <span>Sign out</span>
           </button>

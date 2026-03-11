@@ -14,9 +14,9 @@ export default function SignupPage() {
   const [error, setError] = useState("");
 
   const handleOAuthSignup = (provider: OAuthProvider) => {
-    account.createOAuth2Session(
+    account.createOAuth2Token(
       provider,
-      `${window.location.origin}/dashboard`, // Success URL
+      `${window.location.origin}/onboarding`, // Success URL
       `${window.location.origin}/auth/signup` // Failure URL
     );
   };
@@ -43,7 +43,7 @@ export default function SignupPage() {
       // Note: In an actual app, you may want to save the user's selected 'role' into
       // Appwrite Databases before redirecting.
       
-      window.location.href = "/dashboard";
+      window.location.href = "/onboarding";
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to create account. Please try again.");
