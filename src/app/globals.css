@@ -1,22 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #136dec;
+  --color-dark: #0a0a0a;
+  --radius-twelve: 12px;
+  --blur-xs: 2px;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0a0a0a;
+  --foreground: #ffffff;
 }
 
 body {
@@ -24,3 +17,46 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer utilities {
+  .glass-nav {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+  }
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(19, 109, 236, 0.4);
+    transform: translateY(-4px);
+  }
+  .glow-bg {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(19, 109, 236, 0.15) 0%, rgba(19, 109, 236, 0) 70%);
+    filter: blur(60px);
+    z-index: -1;
+  }
+  .liquid-gradient {
+    background: linear-gradient(135deg, #136dec 0%, #0a0a0a 100%);
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+}
+
+/* Custom scrollbar for dark mode */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #136dec; }
