@@ -60,7 +60,7 @@ export default function AuthPage() {
       
     } catch (err: any) {
       console.error(err);
-      setMessage("Failed to send login token. Please try again.");
+      setMessage(err.message || "Failed to send login token. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -110,8 +110,8 @@ export default function AuthPage() {
         
         <div className="relative z-10">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Please enter your details to sign in</p>
+            <h1 className="text-3xl font-bold mb-2">Login or Sign Up</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Enter your details to access your account</p>
           </div>
           
           {/* Social Sign In */}
